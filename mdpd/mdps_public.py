@@ -141,8 +141,8 @@ if (selected == 'Heart Disease Prediction'):
     # creating a button for Prediction
     
     if st.button('Heart Disease Test Result'):
-        features = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
-        heart_prediction = heart_disease_model.predict([features])  # Use decision_function for single prediction
+        features = [float(age), sex, cp, float(trestbps), float(chol), fbs, restecg, float(thalach), exang, float(oldpeak), slope, ca, thal]
+        heart_prediction = heart_disease_model.predict([features])  # Wrap features in another list to create a 2D array
         #heart_prediction = heart_disease_model.predict([[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])                          
         
         if (heart_prediction[0] == 1):
