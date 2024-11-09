@@ -14,9 +14,9 @@ from streamlit_option_menu import option_menu
 
 diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
 
-heart_disease_model = pickle.load(open('mdpd\heart_disease_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 
-parkinsons_model = pickle.load(open('mdpd\parkinsons_model.sav', 'rb'))
+parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
 
 
