@@ -5,4 +5,4 @@ matplotlib>=3.7.1
 seaborn>=0.12.2
 streamlit>=1.23.1
 streamlit-option-menu>=0.3.2 
-pickle-mixin>=1 .0.2
+pickle-mixin>=1.0.2
