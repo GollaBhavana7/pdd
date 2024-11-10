@@ -106,10 +106,10 @@ if (selected == 'Heart Disease Prediction'):
         trestbps = st.number_input('Resting Blood Pressure')
         
     with col2:
-        chol = st.text_input('Serum Cholestoral in mg/dl')
+        chol = st.number_input('Serum Cholestoral in mg/dl')
         
     with col3:
-        fbs = st.text_input('Fasting Blood Sugar > 120 mg/dl')
+        fbs = st.number_input('Fasting Blood Sugar > 120 mg/dl')
         
     with col1:
         restecg = st.number_input('Resting Electrocardiographic results')
