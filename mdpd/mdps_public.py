@@ -240,23 +240,20 @@ if (selected == "Parkinsons Prediction"):
     st.success(parkinsons_diagnosis)
     """
 
-
 import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-# Load saved models (adjust path as needed)
+# Load saved models (adjust the paths based on your environment)
 diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
-# Dictionary to store user data temporarily (For simplicity)
-# In real-world applications, use a database or other persistent storage
+# Dictionary to store user data temporarily (for simplicity)
 users_db = {}
 
 # Function to authenticate login
 def authenticate(email, password):
-    # Check if the email exists in the "users database" and the password matches
     email = email.strip().lower()
     if email in users_db and users_db[email]["password"] == password:
         return True
@@ -298,9 +295,11 @@ if selected == "Signup":
         if password == confirm_password:
             if signup(name, email, password):
                 st.success(f"Account created successfully for {name}!")
+                # Set login state
                 st.session_state.logged_in = True
                 st.session_state.user = email
-                st.experimental_rerun()  # Redirect to the login page after successful signup
+                st.session_state.name = name
+                st.session_state.selected_page = "Diabetes Prediction"  # Default page after signup
             else:
                 st.error("This email is already registered. Please login.")
         else:
@@ -318,15 +317,28 @@ elif selected == "Login":
         if authenticate(email, password):
             st.session_state.logged_in = True
             st.session_state.user = email
+            st.session_state.name = users_db[email]["name"]
+            st.session_state.selected_page = "Diabetes Prediction"  # Default page after login
             st.success('Login successful!')
-            st.experimental_rerun()  # Redirect to the disease prediction pages
         else:
             st.error('Invalid email or password. Please try again.')
 
 # Disease Prediction Pages (visible after successful login)
 if 'logged_in' in st.session_state and st.session_state.logged_in:
-    # Sidebar for disease prediction options
-    if selected == 'Diabetes Prediction':
+    if 'selected_page' not in st.session_state:
+        st.session_state.selected_page = 'Diabetes Prediction'  # Default page when logged in
+
+    selected_page = st.session_state.selected_page
+
+    # Sidebar to select prediction type
+    with st.sidebar:
+        selected_page = option_menu('Disease Prediction',
+                                    ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction'],
+                                    icons=['activity', 'heart', 'person'],
+                                    default_index=0)
+        st.session_state.selected_page = selected_page
+
+    if selected_page == 'Diabetes Prediction':
         st.title('Diabetes Prediction using ML')
 
         # Get patient details
@@ -362,8 +374,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
             st.write(f"Age: {Age}")
             st.write(f"Prediction: {diab_diagnosis}")
     
-    # Heart Disease Prediction Page
-    elif selected == 'Heart Disease Prediction':
+    elif selected_page == 'Heart Disease Prediction':
         st.title('Heart Disease Prediction using ML')
         
         # Get patient details
@@ -394,7 +405,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
         with col3:
             ca = st.number_input('Major vessels colored by flourosopy')
         with col1:
-            thal = st.number_input('thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
+            thal = st.number_input('thal: 0 = normal; 1 = fixed defect; 2 = reversible defect')
 
         if st.button('Heart Disease Test Result'):
             heart_prediction = heart_disease_model.predict([[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
@@ -410,8 +421,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
             st.write(f"Sex: {sex}")
             st.write(f"Prediction: {heart_diagnosis}")
     
-    # Parkinson's Prediction Page
-    elif selected == "Parkinson's Prediction":
+    elif selected_page == "Parkinson's Prediction":
         st.title("Parkinson's Disease Prediction using ML")
 
         # Get patient details
@@ -449,13 +459,3 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
             st.subheader('Patient Information:')
             st.write(f"Name: {patient_name}")
             st.write(f"Prediction: {parkinsons_diagnosis}")
-    
-    # Logout button to end session
-    if st.button('Logout'):
-        st.session_state.logged_in = False
-        st.session_state.user = None
-        st.experimental_rerun()  # Reload to show the login page
-
-
-
-
