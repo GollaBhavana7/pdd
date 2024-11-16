@@ -4,9 +4,9 @@ from streamlit_option_menu import option_menu
 import numpy as np
 
 # Load pre-trained models
-diabetes_model = pickle.load(open('models/diabetes_model.sav', 'rb'))
-heart_disease_model = pickle.load(open('models/heart_disease_model.sav', 'rb'))
-parkinsons_model = pickle.load(open('models/parkinsons_model.sav', 'rb'))
+diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
+parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
 # Sidebar menu for navigation
 with st.sidebar:
