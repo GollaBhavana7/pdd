@@ -218,7 +218,7 @@ if selected == "Heart Disease Prediction":
             heart_diagnosis = 'The person is having heart disease'
         else:
             heart_diagnosis = 'The person does not have any heart disease'
-            st.success(f"Patient: {patient_name},   Age: {Age},   Result: {heart_diagnosis}")
+            st.success(f"Patient: {patient_name},   Age: {age},   Result: {heart_diagnosis}")
 
 # Parkinson's Prediction Page
 elif selected == "Parkinson's Prediction":
@@ -294,6 +294,9 @@ elif selected == "Parkinson's Prediction":
     
     with col3:
         patient_name = st.text_input("Patient Name")
+
+    with col4:
+        Age = st.number_input("Age of the Person", min_value=0)
 
     if st.button("Parkinson's Test Result"):
         user_input = [fo, fhi, flo, Jitter_percent, Jitter_Abs,
