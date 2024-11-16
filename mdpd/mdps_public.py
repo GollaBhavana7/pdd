@@ -487,8 +487,8 @@ import numpy as np
 import pickle
 
 # Load pre-trained models
-diabetes_model = pickle.load(open('diabetes_model.pkl', 'rb'))
-heart_disease_model = pickle.load(open('heart_disease_model.pkl', 'rb'))
+diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 
 # App title
 st.title("Multiple Disease Prediction System")
