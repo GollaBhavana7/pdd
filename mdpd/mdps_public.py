@@ -239,7 +239,7 @@ if (selected == "Parkinsons Prediction"):
         
     st.success(parkinsons_diagnosis)
     """
-import pickle
+ import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
 
@@ -248,10 +248,13 @@ diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
-# Function to authenticate login
-def authenticate(username, password):
-    # Hardcoded username and password for simplicity
-    if username == "admin" and password == "password123":
+# Function to authenticate login based on name and email
+def authenticate(name, email):
+    # Hardcoded valid name and email for simplicity
+    valid_name = "admin"
+    valid_email = "admin@example.com"
+    
+    if name == valid_name and email == valid_email:
         return True
     else:
         return False
@@ -273,16 +276,16 @@ with st.sidebar:
 if selected == 'Login':
     st.title('Login Page')
     
-    username = st.text_input('Username')
-    password = st.text_input('Password', type='password')
+    name = st.text_input('Name')
+    email = st.text_input('Email')
     
     if st.button('Login'):
-        if authenticate(username, password):
+        if authenticate(name, email):
             st.session_state.logged_in = True
             st.success('Login successful!')
             st.experimental_rerun()  # Reload to show the prediction options
         else:
-            st.error('Invalid credentials. Please try again.')
+            st.error('Invalid name or email. Please try again.')
 
 # If user is logged in, show the disease prediction pages
 if 'logged_in' in st.session_state and st.session_state.logged_in:
@@ -416,10 +419,6 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
     if st.button('Logout'):
         st.session_state.logged_in = False
         st.experimental_rerun()
-
-
-
-
 
 
 
