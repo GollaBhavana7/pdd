@@ -159,9 +159,7 @@ if st.session_state.logged_in:
                 [[Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]]
             )
             result = "The person is diabetic" if diab_prediction[0] == 1 else "The person is not diabetic"
-            st.success(f"Patient: {patient_name}
-            Age: {Age}
-            Result: {result}")
+            st.success(f"Patient: {patient_name},   Age: {Age},   Result: {result}")
 
 # Heart Disease Prediction Page
 if selected == "Heart Disease Prediction":
@@ -218,9 +216,7 @@ if selected == "Heart Disease Prediction":
         else:
             heart_diagnosis = 'The person does not have any heart disease'
 
-        st.success(f"Patient: {age}
-        Sex: {'Male' if sex == 1 else 'Female'}
-        Result: {heart_diagnosis}")
+        st.success(f"Patient: {age},   Sex: {'Male' if sex == 1 else 'Female'},   Result: {heart_diagnosis}")
 
 # Parkinson's Prediction Page
 elif selected == "Parkinson's Prediction":
@@ -309,5 +305,4 @@ elif selected == "Parkinson's Prediction":
         else:
             parkinsons_diagnosis = "The person does not have Parkinson's disease"
 
-        st.success(f"Patient: {age}
-        Result: {parkinsons_diagnosis}")
+        st.success(f"Patient: {age},   Result: {parkinsons_diagnosis}")
