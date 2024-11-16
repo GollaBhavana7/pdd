@@ -1,6 +1,4 @@
 
-"""
-
 import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
@@ -238,8 +236,6 @@ if (selected == "Parkinsons Prediction"):
           parkinsons_diagnosis = "The person does not have Parkinson's disease"
         
     st.success(parkinsons_diagnosis)
-    """
-
 """import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
@@ -482,75 +478,3 @@ if st.button('Logout'):
     st.experimental_rerun()
  
 """
-import streamlit as st
-import numpy as np
-import pickle
-
-# Load pre-trained models
-diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
-heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
-
-# App title
-st.title("Multiple Disease Prediction System")
-
-# Sidebar navigation
-st.sidebar.title("Navigation")
-selected = st.sidebar.selectbox("Choose Disease Prediction:", ["Home", "Diabetes Prediction", "Heart Disease Prediction"])
-
-# Home page
-if selected == "Home":
-    st.write("""
-        ## Welcome to the Multiple Disease Prediction System
-        Choose a disease prediction option from the sidebar.
-    """)
-
-# Diabetes Prediction Page
-elif selected == "Diabetes Prediction":
-    st.header("Diabetes Prediction")
-
-    # Input fields for diabetes prediction
-    pregnancies = st.number_input("Number of Pregnancies", min_value=0, step=1)
-    glucose = st.number_input("Glucose Level", min_value=0.0)
-    blood_pressure = st.number_input("Blood Pressure Level", min_value=0.0)
-    skin_thickness = st.number_input("Skin Thickness", min_value=0.0)
-    insulin = st.number_input("Insulin Level", min_value=0.0)
-    bmi = st.number_input("BMI", min_value=0.0)
-    diabetes_pedigree = st.number_input("Diabetes Pedigree Function", min_value=0.0)
-    age = st.number_input("Age", min_value=0, step=1)
-
-    # Predict diabetes
-    if st.button("Predict Diabetes"):
-        features = np.array([[pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree, age]])
-        result = diabetes_model.predict(features)
-        st.success(f"Diabetes Prediction: {'Positive' if result[0] == 1 else 'Negative'}")
-
-# Heart Disease Prediction Page
-elif selected == "Heart Disease Prediction":
-    st.header("Heart Disease Prediction")
-
-    # Input fields for heart disease prediction
-    age = st.number_input("Age", min_value=0, step=1)
-    sex = st.selectbox("Sex", ["Male", "Female"])
-    chest_pain = st.number_input("Chest Pain Type (1-4)", min_value=1, max_value=4, step=1)
-    resting_bp = st.number_input("Resting Blood Pressure", min_value=0.0)
-    cholesterol = st.number_input("Cholesterol Level", min_value=0.0)
-    fasting_blood_sugar = st.selectbox("Fasting Blood Sugar > 120 mg/dl", ["Yes", "No"])
-    resting_ecg = st.number_input("Resting ECG Results (0-2)", min_value=0, max_value=2, step=1)
-    max_heart_rate = st.number_input("Maximum Heart Rate Achieved", min_value=0.0)
-    exercise_angina = st.selectbox("Exercise Induced Angina", ["Yes", "No"])
-    oldpeak = st.number_input("Oldpeak (ST Depression Induced by Exercise)", min_value=0.0)
-    slope = st.number_input("Slope of the Peak Exercise ST Segment (0-2)", min_value=0, max_value=2, step=1)
-    major_vessels = st.number_input("Number of Major Vessels Colored by Fluoroscopy (0-3)", min_value=0, max_value=3, step=1)
-    thal = st.selectbox("Thalassemia (1 = Normal, 2 = Fixed Defect, 3 = Reversible Defect)", [1, 2, 3])
-
-    # Map categorical inputs
-    sex = 1 if sex == "Male" else 0
-    fasting_blood_sugar = 1 if fasting_blood_sugar == "Yes" else 0
-    exercise_angina = 1 if exercise_angina == "Yes" else 0
-
-    # Predict heart disease
-    if st.button("Predict Heart Disease"):
-        features = np.array([[age, sex, chest_pain, resting_bp, cholesterol, fasting_blood_sugar, resting_ecg,
-                              max_heart_rate, exercise_angina, oldpeak, slope, major_vessels, thal]])
-        result = heart_disease_model.predict(features)
-        st.success(f"Heart Disease Prediction: {'Positive' if result[0] == 1 else 'Negative'}")
