@@ -205,6 +205,9 @@ if selected == "Heart Disease Prediction":
         
     with col1:
         thal = st.number_input('thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
+
+    with col2:
+         patient_name = st.text_input("Patient Name")
         
     if st.button('Heart Disease Test Result'):
         heart_prediction = heart_disease_model.predict([[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
@@ -216,7 +219,7 @@ if selected == "Heart Disease Prediction":
         else:
             heart_diagnosis = 'The person does not have any heart disease'
 
-        st.success(f"Patient: {age},   Sex: {'Male' if sex == 1 else 'Female'},   Result: {heart_diagnosis}")
+         st.success(f"Patient: {patient_name},   Age: {Age},   Result: {result}")
 
 # Parkinson's Prediction Page
 elif selected == "Parkinson's Prediction":
@@ -289,6 +292,9 @@ elif selected == "Parkinson's Prediction":
 
     with col2:
         PPE = st.text_input('PPE')
+    
+    with col3:
+        patient_name = st.text_input("Patient Name")
 
     if st.button("Parkinson's Test Result"):
         user_input = [fo, fhi, flo, Jitter_percent, Jitter_Abs,
@@ -305,4 +311,4 @@ elif selected == "Parkinson's Prediction":
         else:
             parkinsons_diagnosis = "The person does not have Parkinson's disease"
 
-        st.success(f"Patient: {age},   Result: {parkinsons_diagnosis}")
+         st.success(f"Patient: {patient_name},   Age: {Age},   Result: {result}")
