@@ -12,14 +12,19 @@ heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
  
 
-with st.sidebar:
-    selected = option_menu(
-        menu_title="Predictive Disease Detection App",
-        options=["Home"],
-        default_index=0
-    )
 
-# Home Page
+# sidebar for navigation
+with st.sidebar:
+    
+    selected = option_menu('Predictive Disease Detection App',
+                          
+                          ['Home',
+                           'Diabetes Prediction',
+                           'Heart Disease Prediction',
+                           'Parkinsons Prediction'],
+                          icons=['activity','heart','person'],
+                          default_index=0)
+ # Home Page
 if selected == "Home":
     st.title("Welcome to Predictive Disease Detection App")
     st.write("""
@@ -30,17 +35,6 @@ if selected == "Home":
     
     Select a disease prediction option from the sidebar to get started.
     """)
-
-# sidebar for navigation
-with st.sidebar:
-    
-    selected = option_menu('Predictive Disease Detection App',
-                          
-                          ['Diabetes Prediction',
-                           'Heart Disease Prediction',
-                           'Parkinsons Prediction'],
-                          icons=['activity','heart','person'],
-                          default_index=0)
     
     
 # Diabetes Prediction Page
