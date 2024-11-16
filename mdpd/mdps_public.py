@@ -15,8 +15,7 @@ parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 with st.sidebar:
     selected = option_menu(
         menu_title="Predictive Disease Detection App",
-        options=["Home", "Diabetes Prediction", "Heart Disease Prediction", "Parkinson's Prediction"],
-        icons=["house", "activity", "heart", "person"],
+        options=["Home", "Diabetes Prediction"],
         default_index=0
     )
 
