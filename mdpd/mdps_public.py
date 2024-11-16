@@ -239,7 +239,7 @@ if (selected == "Parkinsons Prediction"):
         
     st.success(parkinsons_diagnosis)
     """
- import pickle
+import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
 
