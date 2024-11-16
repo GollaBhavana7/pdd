@@ -218,8 +218,7 @@ if selected == "Heart Disease Prediction":
             heart_diagnosis = 'The person is having heart disease'
         else:
             heart_diagnosis = 'The person does not have any heart disease'
-
-         st.success(f"Patient: {patient_name},   Age: {Age},   Result: {result}")
+            st.success(f"Patient: {patient_name},   Age: {Age},   Result: {heart_diagnosis}")
 
 # Parkinson's Prediction Page
 elif selected == "Parkinson's Prediction":
@@ -310,5 +309,4 @@ elif selected == "Parkinson's Prediction":
             parkinsons_diagnosis = "The person has Parkinson's disease"
         else:
             parkinsons_diagnosis = "The person does not have Parkinson's disease"
-
-         st.success(f"Patient: {patient_name},   Age: {Age},   Result: {result}")
+            st.success(f"Patient: {patient_name},   Age: {Age},   Result: {parkinsons_diagnosis}")
