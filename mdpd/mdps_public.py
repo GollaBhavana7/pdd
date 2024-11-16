@@ -239,10 +239,10 @@ if (selected == "Parkinsons Prediction"):
         
     st.success(parkinsons_diagnosis)
     """
-
 import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
+import re
 
 # Load saved models (adjust the paths based on your environment)
 diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
@@ -251,6 +251,15 @@ parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
 # Dictionary to store user data temporarily (for simplicity)
 users_db = {}
+
+# Function to validate email format (checks for basic email structure and @gmail.com)
+def validate_email(email):
+    email = email.strip().lower()
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return False
+    if not email.endswith("@gmail.com"):
+        return False
+    return True
 
 # Function to authenticate login
 def authenticate(email, password):
@@ -292,18 +301,20 @@ if selected == "Signup":
     confirm_password = st.text_input('Confirm Password', type='password')
 
     if st.button('Create Account'):
-        if password == confirm_password:
-            if signup(name, email, password):
-                st.success(f"Account created successfully for {name}!")
-                # Set login state
-                st.session_state.logged_in = True
-                st.session_state.user = email
-                st.session_state.name = name
-                st.session_state.selected_page = "Diabetes Prediction"  # Default page after signup
-            else:
-                st.error("This email is already registered. Please login.")
-        else:
+        # Validate email and password
+        if not validate_email(email):
+            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
+        elif password != confirm_password:
             st.error("Passwords do not match. Please try again.")
+        elif signup(name, email, password):
+            st.success(f"Account created successfully for {name}!")
+            # Set login state
+            st.session_state.logged_in = True
+            st.session_state.user = email
+            st.session_state.name = name
+            st.session_state.selected_page = "Diabetes Prediction"  # Default page after signup
+        else:
+            st.error("This email is already registered. Please login.")
 
 # Login Page
 elif selected == "Login":
@@ -314,7 +325,10 @@ elif selected == "Login":
     password = st.text_input('Password', type='password')
 
     if st.button('Login'):
-        if authenticate(email, password):
+        # Validate email and password
+        if not validate_email(email):
+            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
+        elif authenticate(email, password):
             st.session_state.logged_in = True
             st.session_state.user = email
             st.session_state.name = users_db[email]["name"]
@@ -459,3 +473,10 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
             st.subheader('Patient Information:')
             st.write(f"Name: {patient_name}")
             st.write(f"Prediction: {parkinsons_diagnosis}")
+
+# Logout button to end session
+if st.button('Logout'):
+    st.session_state.logged_in = False
+    st.session_state.clear()
+    st.experimental_rerun()
+
