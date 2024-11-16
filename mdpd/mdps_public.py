@@ -19,8 +19,7 @@ with st.sidebar:
 # Home Page
 if selected == "Home":
     st.title("Welcome to Predictive Disease Detection App")
-    st.write("""
-    This application uses machine learning to predict the likelihood of the following diseases:
+    st.write("""This application uses machine learning to predict the likelihood of the following diseases:
     - *Diabetes*
     - *Heart Disease*
     - *Parkinson's Disease*
