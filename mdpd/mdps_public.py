@@ -239,42 +239,43 @@ if (selected == "Parkinsons Prediction"):
         
     st.success(parkinsons_diagnosis)
     """
- 
+
 
 import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-# Load saved models
+# Load saved models (adjust path as needed)
 diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
-# Hardcoded credentials for simplicity
-valid_name = "admin"
-valid_email = "admin@example.com"
+# Dictionary to store user data temporarily (For simplicity)
+# In real-world applications, use a database or other persistent storage
+users_db = {}
 
 # Function to authenticate login
-def authenticate(name, email):
-    # Clean up the input: strip extra spaces and convert to lowercase
-    name = name.strip().lower()
+def authenticate(email, password):
+    # Check if the email exists in the "users database" and the password matches
     email = email.strip().lower()
-
-    # Debugging: Print the input values for troubleshooting
-    st.write(f"Entered Name: '{name}'")
-    st.write(f"Entered Email: '{email}'")
-
-    # Compare with hardcoded credentials
-    if name == valid_name.lower() and email == valid_email.lower():
+    if email in users_db and users_db[email]["password"] == password:
         return True
     else:
         return False
 
+# Function to register a new user (Signup)
+def signup(name, email, password):
+    email = email.strip().lower()
+    if email in users_db:
+        return False  # Email already exists
+    # Save user details in the "database"
+    users_db[email] = {"name": name, "password": password}
+    return True
+
 # Sidebar for navigation
 with st.sidebar:
-    # If not logged in, show login page
     if 'logged_in' not in st.session_state or not st.session_state.logged_in:
-        selected = 'Login'
+        selected = option_menu("Predictive Disease Detection App", ["Login", "Signup"], icons=["key", "person-plus"], default_index=0)
     else:
         selected = option_menu('Predictive Disease Detection App',
                                ['Diabetes Prediction',
@@ -283,26 +284,48 @@ with st.sidebar:
                                icons=['activity', 'heart', 'person'],
                                default_index=0)
 
+# Signup Page
+if selected == "Signup":
+    st.title("Signup Page")
+
+    # Signup form fields
+    name = st.text_input('Full Name')
+    email = st.text_input('Email')
+    password = st.text_input('Password', type='password')
+    confirm_password = st.text_input('Confirm Password', type='password')
+
+    if st.button('Create Account'):
+        if password == confirm_password:
+            if signup(name, email, password):
+                st.success(f"Account created successfully for {name}!")
+                st.session_state.logged_in = True
+                st.session_state.user = email
+                st.experimental_rerun()  # Redirect to the login page after successful signup
+            else:
+                st.error("This email is already registered. Please login.")
+        else:
+            st.error("Passwords do not match. Please try again.")
+
 # Login Page
-if selected == 'Login':
+elif selected == "Login":
     st.title("Login Page")
 
-    # Input fields for name and email
-    name = st.text_input('Name')
+    # Login form fields
     email = st.text_input('Email')
+    password = st.text_input('Password', type='password')
 
-    # Try login
     if st.button('Login'):
-        if authenticate(name, email):
+        if authenticate(email, password):
             st.session_state.logged_in = True
+            st.session_state.user = email
             st.success('Login successful!')
-            st.experimental_rerun()  # Reload to show the prediction options
+            st.experimental_rerun()  # Redirect to the disease prediction pages
         else:
-            st.error('Invalid name or email. Please try again.')
+            st.error('Invalid email or password. Please try again.')
 
-# If user is logged in, show the disease prediction pages
+# Disease Prediction Pages (visible after successful login)
 if 'logged_in' in st.session_state and st.session_state.logged_in:
-    # Sidebar for navigation between disease prediction options
+    # Sidebar for disease prediction options
     if selected == 'Diabetes Prediction':
         st.title('Diabetes Prediction using ML')
 
@@ -430,6 +453,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
     # Logout button to end session
     if st.button('Logout'):
         st.session_state.logged_in = False
+        st.session_state.user = None
         st.experimental_rerun()  # Reload to show the login page
 
 
