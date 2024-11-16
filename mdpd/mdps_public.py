@@ -162,7 +162,7 @@ if st.session_state.logged_in:
             st.success(f"Patient: {patient_name}\nAge: {Age}\nResult: {result}")
 
 # Heart Disease Prediction Page
-elif selected == "Heart Disease Prediction":
+if selected == "Heart Disease Prediction":
     st.title('Heart Disease Prediction using ML')
     
     col1, col2, col3 = st.columns(3)
