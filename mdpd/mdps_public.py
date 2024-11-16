@@ -482,3 +482,310 @@ if st.button('Logout'):
     st.experimental_rerun()
 """
 
+import pickle
+import streamlit as st
+from streamlit_option_menu import option_menu
+import re
+import json
+import os
+
+# Load saved models (adjust the paths based on your environment)
+diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
+parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
+
+# File to store user data
+USER_DATA_FILE = "users.json"
+
+# Function to load user data from a JSON file
+def load_users():
+    if os.path.exists(USER_DATA_FILE):
+        with open(USER_DATA_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+# Function to save user data to a JSON file
+def save_user(email, name, password):
+    users = load_users()
+    email = email.strip().lower()
+    users[email] = {"name": name, "password": password}
+    with open(USER_DATA_FILE, "w") as f:
+        json.dump(users, f)
+
+# Function to validate email format (checks for basic email structure and @gmail.com)
+def validate_email(email):
+    email = email.strip().lower()
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return False
+    if not email.endswith("@gmail.com"):
+        return False
+    return True
+
+# Function to authenticate login
+def authenticate(email, password):
+    users = load_users()
+    email = email.strip().lower()
+    if email in users and users[email]["password"] == password:
+        return True
+    return False
+
+# Sidebar for navigation
+with st.sidebar:
+    if 'logged_in' not in st.session_state or not st.session_state.logged_in:
+        selected = option_menu("Predictive Disease Detection App", ["Login", "Signup"], icons=["key", "person-plus"], default_index=0)
+    else:
+        selected = option_menu('Predictive Disease Detection App',
+                               ['Diabetes Prediction',
+                                'Heart Disease Prediction',
+                                "Parkinson's Prediction", 
+                                'Results'],
+                               icons=['activity', 'heart', 'person', 'clipboard'],
+                               default_index=0)
+
+# Signup Page
+if selected == "Signup":
+    st.title("Signup Page")
+
+    # Signup form fields
+    name = st.text_input('Full Name')
+    email = st.text_input('Email')
+    password = st.text_input('Password', type='password')
+    confirm_password = st.text_input('Confirm Password', type='password')
+
+    if st.button('Create Account'):
+        # Validate email and password
+        if not validate_email(email):
+            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
+        elif password != confirm_password:
+            st.error("Passwords do not match. Please try again.")
+        elif authenticate(email, password):
+            st.error("This email is already registered. Please login.")
+        else:
+            # Save user data
+            save_user(email, name, password)
+            st.success(f"Account created successfully for {name}!")
+            # Set login state
+            st.session_state.logged_in = True
+            st.session_state.user = email
+            st.session_state.name = name
+            st.session_state.selected_page = "Diabetes Prediction"  # Default page after signup
+
+# Login Page
+elif selected == "Login":
+    st.title("Login Page")
+
+    # Login form fields
+    email = st.text_input('Email')
+    password = st.text_input('Password', type='password')
+
+    if st.button('Login'):
+        # Validate email and password
+        if not validate_email(email):
+            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
+        elif authenticate(email, password):
+            st.session_state.logged_in = True
+            st.session_state.user = email
+            st.session_state.name = load_users()[email]["name"]
+            st.session_state.selected_page = "Diabetes Prediction"  # Default page after login
+            st.success('Login successful!')
+        else:
+            st.error('Invalid email or password. Please try again.')
+
+# Disease Prediction Pages (visible after successful login)
+if 'logged_in' in st.session_state and st.session_state.logged_in:
+    if 'selected_page' not in st.session_state:
+        st.session_state.selected_page = 'Diabetes Prediction'  # Default page when logged in
+
+    selected_page = st.session_state.selected_page
+
+    # Sidebar to select prediction type
+    with st.sidebar:
+        selected_page = option_menu('Disease Prediction',
+                                    ['Diabetes Prediction', 'Heart Disease Prediction', "Parkinson's Prediction", 'Results'],
+                                    icons=['activity', 'heart', 'person', 'clipboard'],
+                                    default_index=0)
+        st.session_state.selected_page = selected_page
+
+    if selected_page == 'Diabetes Prediction':
+        st.title('Diabetes Prediction using ML')
+
+        # Get patient details
+        patient_name = st.text_input('Patient Name')
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            Pregnancies = st.text_input('Number of Pregnancies')
+        with col2:
+            Glucose = st.text_input('Glucose Level')
+        with col3:
+            BloodPressure = st.text_input('Blood Pressure value')
+        with col1:
+            SkinThickness = st.text_input('Skin Thickness value')
+        with col2:
+            Insulin = st.text_input('Insulin Level')
+        with col3:
+            BMI = st.text_input('BMI value')
+        with col1:
+            DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value')
+        with col2:
+            Age = st.text_input('Age of the Person')
+
+        if st.button('Submit for Diabetes Prediction'):
+            # Store patient data in session state for later use
+            st.session_state.patient_data = {
+                'patient_name': patient_name,
+                'Pregnancies': Pregnancies,
+                'Glucose': Glucose,
+                'BloodPressure': BloodPressure,
+                'SkinThickness': SkinThickness,
+                'Insulin': Insulin,
+                'BMI': BMI,
+                'DiabetesPedigreeFunction': DiabetesPedigreeFunction,
+                'Age': Age
+            }
+            # Update the page to display results after submission
+            st.session_state.selected_page = 'Results'
+            st.experimental_rerun()  # Refresh to show results
+
+    elif selected_page == 'Heart Disease Prediction':
+        st.title('Heart Disease Prediction using ML')
+
+        # Get patient details
+        patient_name = st.text_input('Patient Name')
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            age = st.number_input('Age')
+        with col2:
+            sex = st.number_input('Sex')
+        with col3:
+            cp = st.number_input('Chest Pain types')
+        with col1:
+            trestbps = st.number_input('Resting Blood Pressure')
+        with col2:
+            chol = st.number_input('Serum Cholestoral in mg/dl')
+        with col3:
+            fbs = st.number_input('Fasting Blood Sugar > 120 mg/dl')
+        with col1:
+            restecg = st.number_input('Resting Electrocardiographic results')
+        with col2:
+            thalach = st.number_input('Maximum Heart Rate achieved')
+        with col3:
+            exang = st.number_input('Exercise Induced Angina')
+        with col1:
+            oldpeak = st.number_input('ST depression induced by exercise')
+        with col2:
+            slope = st.number_input('Slope of the peak exercise ST segment')
+        with col3:
+            ca = st.number_input('Major vessels colored by flourosopy')
+        with col1:
+            thal = st.number_input('thal: 0 = normal; 1 = fixed defect; 2 = reversible defect')
+
+        if st.button('Submit for Heart Disease Prediction'):
+            # Store patient data in session state for later use
+            st.session_state.patient_data = {
+                'patient_name': patient_name,
+                'age': age,
+                'sex': sex,
+                'cp': cp,
+                'trestbps': trestbps,
+                'chol': chol,
+                'fbs': fbs,
+                'restecg': restecg,
+                'thalach': thalach,
+                'exang': exang,
+                'oldpeak': oldpeak,
+                'slope': slope,
+                'ca': ca,
+                'thal': thal
+            }
+            # Update the page to display results after submission
+            st.session_state.selected_page = 'Results'
+            st.experimental_rerun()  # Refresh to show results
+
+    elif selected_page == "Parkinson's Prediction":
+        st.title("Parkinson's Disease Prediction using ML")
+
+        # Get patient details
+        patient_name = st.text_input('Patient Name')
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            fo = st.text_input('MDVP:Fo(Hz)')
+        with col2:
+            fhi = st.text_input('MDVP:Fhi(Hz)')
+        with col3:
+            flo = st.text_input('MDVP:Flo(Hz)')
+        with col4:
+            Jitter_percent = st.text_input('MDVP:Jitter(%)')
+        with col5:
+            Jitter_Abs = st.text_input('MDVP:Jitter(Abs)')
+        with col1:
+            RAP = st.text_input('MDVP:RAP')
+        with col2:
+            PPQ = st.text_input('MDVP:PPQ')
+        with col3:
+            DDP = st.text_input('Jitter:DDP')
+        with col4:
+            Shimmer = st.text_input('MDVP:Shimmer')
+        with col5:
+            Shimmer_dB = st.text_input('MDVP:Shimmer(dB)')
+
+        if st.button("Submit for Parkinson's Prediction"):
+            # Store patient data in session state for later use
+            st.session_state.patient_data = {
+                'patient_name': patient_name,
+                'fo': fo,
+                'fhi': fhi,
+                'flo': flo,
+                'Jitter_percent': Jitter_percent,
+                'Jitter_Abs': Jitter_Abs,
+                'RAP': RAP,
+                'PPQ': PPQ,
+                'DDP': DDP,
+                'Shimmer': Shimmer,
+                'Shimmer_dB': Shimmer_dB
+            }
+            # Update the page to display results after submission
+            st.session_state.selected_page = 'Results'
+            st.experimental_rerun()  # Refresh to show results
+
+    # Results Page
+    elif selected_page == 'Results':
+        st.title("Prediction Results")
+
+        # Retrieve patient data from session state
+        patient_data = st.session_state.get('patient_data', None)
+
+        if patient_data:
+            # Depending on the data, make predictions for different diseases
+            if 'Pregnancies' in patient_data:  # Diabetes prediction
+                diab_prediction = diabetes_model.predict([[patient_data['Pregnancies'], patient_data['Glucose'],
+                                                           patient_data['BloodPressure'], patient_data['SkinThickness'],
+                                                           patient_data['Insulin'], patient_data['BMI'],
+                                                           patient_data['DiabetesPedigreeFunction'], patient_data['Age']]])
+                diab_diagnosis = 'Diabetic' if diab_prediction[0] == 1 else 'Not Diabetic'
+                st.write(f"Diabetes Diagnosis: {diab_diagnosis}")
+            elif 'age' in patient_data:  # Heart Disease prediction
+                heart_prediction = heart_disease_model.predict([[patient_data['age'], patient_data['sex'],
+                                                                 patient_data['cp'], patient_data['trestbps'],
+                                                                 patient_data['chol'], patient_data['fbs'],
+                                                                 patient_data['restecg'], patient_data['thalach'],
+                                                                 patient_data['exang'], patient_data['oldpeak'],
+                                                                 patient_data['slope'], patient_data['ca'],
+                                                                 patient_data['thal']]])
+                heart_diagnosis = 'Has Heart Disease' if heart_prediction[0] == 1 else 'No Heart Disease'
+                st.write(f"Heart Disease Diagnosis: {heart_diagnosis}")
+            elif 'fo' in patient_data:  # Parkinson's prediction
+                parkinsons_prediction = parkinsons_model.predict([[patient_data['fo'], patient_data['fhi'], 
+                                                                   patient_data['flo'], patient_data['Jitter_percent'],
+                                                                   patient_data['Jitter_Abs'], patient_data['RAP'],
+                                                                   patient_data['PPQ'], patient_data['DDP'],
+                                                                   patient_data['Shimmer'], patient_data['Shimmer_dB']]])
+                parkinsons_diagnosis = "Has Parkinson's Disease" if parkinsons_prediction[0] == 1 else "No Parkinson's Disease"
+                st.write(f"Parkinson's Diagnosis: {parkinsons_diagnosis}")
+        else:
+            st.write("No data available for predictions.")
+
+# Logout button to end session
+if st.button('Logout'):
+    st.session_state.logged_in = False
+    st.session_state.clear()  # Clear session state
+    st.experimental_rerun()  # Reload app to redirect to login
