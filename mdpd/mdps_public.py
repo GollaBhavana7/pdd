@@ -11,7 +11,7 @@ parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 # Sidebar menu for navigation
 with st.sidebar:
     selected = option_menu(
-        menu_title="Multiple Disease Prediction System",
+        menu_title="Predictive Disease Detection App",
         options=["Home", "Diabetes Prediction", "Heart Disease Prediction", "Parkinson's Prediction"],
         icons=["house", "activity", "heart", "person"],
         default_index=0
@@ -19,7 +19,7 @@ with st.sidebar:
 
 # Home Page
 if selected == "Home":
-    st.title("Welcome to the Multiple Disease Prediction System")
+    st.title("Welcome to Predictive Disease Detection App")
     st.write("""
     This application uses machine learning to predict the likelihood of the following diseases:
     - **Diabetes**
