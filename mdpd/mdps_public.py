@@ -239,22 +239,33 @@ if (selected == "Parkinsons Prediction"):
         
     st.success(parkinsons_diagnosis)
     """
+ 
+
 import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-# loading the saved models
+# Load saved models
 diabetes_model = pickle.load(open('mdpd/diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('mdpd/heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('mdpd/parkinsons_model.sav', 'rb'))
 
-# Function to authenticate login based on name and email
+# Hardcoded credentials for simplicity
+valid_name = "admin"
+valid_email = "admin@example.com"
+
+# Function to authenticate login
 def authenticate(name, email):
-    # Hardcoded valid name and email for simplicity
-    valid_name = "admin"
-    valid_email = "admin@example.com"
-    
-    if name == valid_name and email == valid_email:
+    # Clean up the input: strip extra spaces and convert to lowercase
+    name = name.strip().lower()
+    email = email.strip().lower()
+
+    # Debugging: Print the input values for troubleshooting
+    st.write(f"Entered Name: '{name}'")
+    st.write(f"Entered Email: '{email}'")
+
+    # Compare with hardcoded credentials
+    if name == valid_name.lower() and email == valid_email.lower():
         return True
     else:
         return False
@@ -274,11 +285,13 @@ with st.sidebar:
 
 # Login Page
 if selected == 'Login':
-    st.title('Login Page')
-    
+    st.title("Login Page")
+
+    # Input fields for name and email
     name = st.text_input('Name')
     email = st.text_input('Email')
-    
+
+    # Try login
     if st.button('Login'):
         if authenticate(name, email):
             st.session_state.logged_in = True
@@ -289,8 +302,7 @@ if selected == 'Login':
 
 # If user is logged in, show the disease prediction pages
 if 'logged_in' in st.session_state and st.session_state.logged_in:
-    
-    # Diabetes Prediction Page
+    # Sidebar for navigation between disease prediction options
     if selected == 'Diabetes Prediction':
         st.title('Diabetes Prediction using ML')
 
@@ -328,7 +340,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
             st.write(f"Prediction: {diab_diagnosis}")
     
     # Heart Disease Prediction Page
-    if selected == 'Heart Disease Prediction':
+    elif selected == 'Heart Disease Prediction':
         st.title('Heart Disease Prediction using ML')
         
         # Get patient details
@@ -376,7 +388,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
             st.write(f"Prediction: {heart_diagnosis}")
     
     # Parkinson's Prediction Page
-    if selected == "Parkinsons Prediction":
+    elif selected == "Parkinson's Prediction":
         st.title("Parkinson's Disease Prediction using ML")
 
         # Get patient details
@@ -418,10 +430,7 @@ if 'logged_in' in st.session_state and st.session_state.logged_in:
     # Logout button to end session
     if st.button('Logout'):
         st.session_state.logged_in = False
-        st.experimental_rerun()
-
-
-
+        st.experimental_rerun()  # Reload to show the login page
 
 
 
